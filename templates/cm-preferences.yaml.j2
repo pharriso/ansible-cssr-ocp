@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ cssr_name | lower }}-preferences
+  namespace: {{ cssr_namespace }}
+data:
+  preferences.json: |
+    {
+    "node-name": "{{ cssr_namespace }}-{{ cssr_name }}",
+    "node-role": "combo",
+    "router-name": "{{ cssr_namespace }}-{{ cssr_routername }}",
+    "pdc-key-comment": "{{ cssr_namespace }}-{{ cssr_routername }}",
+    "bypass-compliance": true,
+    "disable-tuning": true,
+    "conductor": {"primary":{"ip":"{{ cssr_conductor_ip }}"}},
+    "admin-password": "{{ lookup('ansible.builtin.password', encrypt=sha512_crypt) }}"
+    }

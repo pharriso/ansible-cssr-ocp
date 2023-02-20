@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ cssr_name | lower }}-salt-id
+  namespace: {{ cssr_namespace }}
+data:
+  minion_id: |
+    {{ cssr_namespace }}-{{ cssr_name }}
