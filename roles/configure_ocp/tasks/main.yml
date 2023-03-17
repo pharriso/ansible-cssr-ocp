@@ -1,0 +1,29 @@
+---
+
+- name: create namespace for cssr
+  kubernetes.core.k8s:
+    name: "{{ cssr_namespace }}"
+    api_version: v1
+    kind: Namespace
+    state: present
+
+- name: create sa in namespace
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'sa.yaml.j2') | from_yaml }}"
+
+- name: assign privileged role to sa
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'sa_permissions.yaml.j2') | from_yaml }}"
+
+- name: assign permissions to pull images from default namespace
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'sa_pull_permissions.yaml.j2') | from_yaml }}"
+
+- name: deploy network attachments to openshift namespace
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'network-attachment-macvlan.yaml.j2') | from_yaml }}"
+  loop: "{{ lookup('ansible.builtin.vars', site).cssr_network_attachments }}"

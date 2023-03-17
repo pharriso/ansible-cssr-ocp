@@ -1,0 +1,11 @@
+---
+
+- name: create salt minion id configmap
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'cm-salt_minion_id.yaml.j2') | from_yaml }}"
+
+- name: create cssr preferences configmap
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'cm-preferences.yaml.j2') | from_yaml }}"

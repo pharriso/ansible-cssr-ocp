@@ -1,7 +1,0 @@
----
-
-cssr_network_attachments:
-  - ens1f0-sriov.yaml.j2
-  - ens2f0-sriov.yaml.j2
-  - ens1f0-macvlan.yaml.j2
-  - ens2f0-macvlan.yaml.j2

@@ -1,0 +1,10 @@
+---
+
+- name: include config_maps.yml
+  include_tasks: config_maps.yml
+
+- name: include deploy.yml
+  include_tasks: deploy.yml
+
+- name: include post_config.yml
+  include_tasks: post_config.yml

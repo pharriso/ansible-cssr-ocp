@@ -1,0 +1,70 @@
+- name: authenticate to conductor
+  ansible.builtin.uri:
+    url: https://{{ cssr_conductor_ip }}/api/v1/login
+    method: POST
+    body: "{\"username\": \"{{ cssr_conductor_user }}\",\"password\": \"{{ cssr_conductor_password }}\"}"
+    body_format: json
+    validate_certs: no
+  register: web_auth
+  until: web_auth.status == 200
+  retries: 3
+  delay: 5
+
+- name: configure router
+  ansible.builtin.uri:
+    url: https://{{ cssr_conductor_ip }}/api/v1/config/candidate/authority/router
+    method: POST
+    body: "{\"name\": \"{{ cssr_namespace }}-{{ cssr_routername }}\", \"interNodeSecurity\": \"internal\"}"
+    body_format: json
+    validate_certs: no
+    status_code: 201
+    headers:
+      Authorization: "Bearer {{ web_auth.json.token }}"
+  register: config_router
+  until: config_router.status == 201
+  retries: 3
+  delay: 5
+  ignore_errors: true
+
+- name: configure router node
+  ansible.builtin.uri:
+    url: https://{{ cssr_conductor_ip }}/api/v1/config/candidate/authority/router/{{ cssr_namespace }}-{{ cssr_routername }}/node
+    method: POST
+    body: "{\"name\": \"{{ cssr_namespace }}-{{ cssr_name }}\", \"assetId\": \"{{ cssr_namespace }}-{{ cssr_name }}\", \"role\": \"combo\" }"
+    body_format: json
+    validate_certs: no
+    status_code: 201
+    headers:
+      Authorization: "Bearer {{ web_auth.json.token }}"
+  register: config_node
+  until: config_node.status == 201
+  retries: 3
+  delay: 5
+  ignore_errors: true
+
+- name: validate and commit config
+  ansible.builtin.uri:
+    url: https://{{ cssr_conductor_ip }}/api/v1/config/commit
+    method: POST
+    body: "{}"
+    body_format: json
+    validate_certs: no
+    status_code: 200
+    headers:
+      Authorization: "Bearer {{ web_auth.json.token }}"
+  register: commit_config
+  until: commit_config.status == 200
+  retries: 3
+  delay: 5
+
+- name: wait for router to connect
+  ansible.builtin.uri:
+    url: https://{{ cssr_conductor_ip }}/api/v1/router/{{ cssr_namespace }}-{{ cssr_routername }}
+    method: GET
+    validate_certs: no
+    headers:
+      Authorization: "Bearer {{ web_auth.json.token }}"
+  register: router_status
+  until: router_status.json.managementConnected
+  delay: 30
+  retries: 12

@@ -4,4 +4,6 @@ cssr_name: cssr-auto-node
 cssr_routername: cssr-auto-router
 cssr_conductor_ip: 
 cssr_conductor_user: 
-cssr_conductor_password: 
+cssr_conductor_password: ''
+cssr_node_password: 
+cssr_node_salt: 

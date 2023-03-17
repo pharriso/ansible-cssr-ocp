@@ -1,7 +1,7 @@
 apiVersion: k8s.cni.cncf.io/v1
 kind: NetworkAttachmentDefinition
 metadata:
-  name: ens2f0-macvlan
+  name: {{ item }}-macvlan
   namespace: {{ cssr_namespace }}
 spec:
   config: |-
@@ -9,6 +9,6 @@ spec:
     "cniVersion": "0.3.1",
     "name": "macvlan-net",
     "type": "macvlan",
-    "master": "ens2f0v0",
+    "master": "{{ item }}",
     "mode": "bridge"
     }

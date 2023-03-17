@@ -1,0 +1,28 @@
+---
+
+- name: create persistent volume claim
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'cssr_modules_pvc.yaml.j2') | from_yaml }}"
+
+- name: deploy cssr statefulset to openshift namespace
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'cssr_statefulset.yaml.j2') | from_yaml }}"
+
+- name: get pod status
+  kubernetes.core.k8s_info:
+    kind: Pod
+    label_selectors:
+      - app = {{ cssr_name | lower }}
+    field_selectors:
+    - status.phase=Running
+    namespace: "{{ cssr_namespace }}"
+  register: pod_status
+  until: 'pod_status.resources | length > 0'
+  retries: 15
+  delay: 20
+
+- name: set pod name variable
+  ansible.builtin.set_fact:
+    cssr_pod_name: "{{ pod_status.resources[0].metadata.name }}"
