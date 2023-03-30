@@ -136,7 +136,7 @@
 
 - name: wait for router to connect
   ansible.builtin.uri:
-    url: https://{{ cssr_conductor_ip }}/api/v1/router/{{ cssr_namespace }}-{{ cssr_routername }}
+    url: https://{{ cssr_conductor_ip }}/api/v1/router/{{ cssr_routername }}
     method: GET
     validate_certs: no
     headers:
