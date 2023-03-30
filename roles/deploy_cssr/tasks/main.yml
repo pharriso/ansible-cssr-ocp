@@ -1,5 +1,8 @@
 ---
 
+- name: prepare.yml
+  include_tasks: prepare.yml
+
 - name: include config_maps.yml
   include_tasks: config_maps.yml
 
