@@ -22,3 +22,7 @@
   until: 'pod_status.resources | length > 0'
   retries: 15
   delay: 20
+
+- name: set pod name variable
+  ansible.builtin.set_fact:
+    cssr_pod: "{{ pod_status.resources[0].metadata.name }}"

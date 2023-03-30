@@ -8,36 +8,36 @@
 - name: copy script into pod
   kubernetes.core.k8s_cp:
     namespace: "{{ cssr_namespace }}"
-    pod: "{{ cssr_pod_name }}"
+    pod: "{{ cssr_pod }}"
     remote_path: /tmp/
     local_path: /tmp/cssr_qinq.sh
 
 - name: stop 128T service
   kubernetes.core.k8s_exec:
     namespace: "{{ cssr_namespace }}"
-    pod: "{{ cssr_pod_name }}"
+    pod: "{{ cssr_pod }}"
     command: systemctl stop 128T
 
 - name: execute link qinq script
   kubernetes.core.k8s_exec:
     namespace: "{{ cssr_namespace }}"
-    pod: "{{ cssr_pod_name }}"
+    pod: "{{ cssr_pod }}"
     command: bash /tmp/cssr_qinq.sh
 
 - name: initialise cssr pod
   kubernetes.core.k8s_exec:
     namespace: "{{ cssr_namespace }}"
-    pod: "{{ cssr_pod_name }}"
+    pod: "{{ cssr_pod }}"
     command: initialize128t --preferences /etc/preferences.json
 
 - name: start salt minion in pod
   kubernetes.core.k8s_exec:
     namespace: "{{ cssr_namespace }}"
-    pod: "{{ cssr_pod_name }}"
+    pod: "{{ cssr_pod }}"
     command: systemctl restart salt-minion
 
 - name: start 128T service
   kubernetes.core.k8s_exec:
     namespace: "{{ cssr_namespace }}"
-    pod: "{{ cssr_pod_name }}"
+    pod: "{{ cssr_pod }}"
     command: systemctl start 128T
