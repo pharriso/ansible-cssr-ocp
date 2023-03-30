@@ -1,7 +1,6 @@
 cssr_namespace: cssr-auto
-cssr_network_attachments: # list of network attachement template files. See group_vars/all for example and template files in templates directory
 cssr_name: cssr-auto-node
-cssr_routername: cssr-auto-router
+cssr_router_shortname: cssr-auto-router
 cssr_conductor_ip: 
 cssr_conductor_user: 
 cssr_conductor_password: ''

@@ -1,0 +1,28 @@
+#jinja2: trim_blocks:False
+                        {
+                            "name": "{{ item.lan_interface | upper }}",
+                            "targetInterface": "net1.{{ cssr_client_id }}.{{ cssr_site_id }}{{ item.dept_id }}",
+                            "bridgeName": "net1_br{{ cssr_site_id }}{{ item.dept_id }}",
+                            "networkInterface": [
+                                {
+                                    "name": "{{ item.lan_interface | upper }}-int",
+                                    "tenant": "{{ item.lan_interface | upper }}.site{{ cssr_site_id }}.{{ cssr_client }}",
+                                    "interRouterSecurity": "external",
+                                    "address": [
+                                        {
+                                            "ipAddress": "{{ item.ip_addr }}",
+                                            "prefixLength": 24,
+                                            "gateway": "{{ item.gateway }}",
+                                            "hostService": [
+                                                {
+                                                    "serviceType": "ssh"
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "sourceNat": true,
+                                    "icmp": "allow"
+                                }
+                            ],
+                            "type": "bridged"
+                        }

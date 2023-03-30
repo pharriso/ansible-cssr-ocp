@@ -1,3 +1,17 @@
+---
+
+- name: set facts for site configuration
+  ansible.builtin.set_fact:
+    cssr_client_id: "{{ lookup('ansible.builtin.vars', site).cssr_client_id }}"
+    cssr_site_id: "{{ lookup('ansible.builtin.vars', site).cssr_site_id }}"
+    cssr_wan_id: "{{ lookup('ansible.builtin.vars', site).cssr_wan_id }}"
+    cssr_depts: "{{ lookup('ansible.builtin.vars', site).cssr_depts }}"
+    cssr_wan_ipaddr: "{{ lookup('ansible.builtin.vars', site).cssr_wan_ipaddr }}"
+    cssr_client: "{{ lookup('ansible.builtin.vars', site).cssr_client }}"
+    cssr_pod_name: "{{ cssr_namespace }}-{{ cssr_name }}-node-0"
+    cssr_routername: "{{ cssr_namespace }}-{{ cssr_router_shortname }}"
+
+
 - name: authenticate to conductor
   ansible.builtin.uri:
     url: https://{{ cssr_conductor_ip }}/api/v1/login
@@ -10,36 +24,101 @@
   retries: 3
   delay: 5
 
+- name: configure authority tenant
+  ansible.builtin.uri:
+    url: https://{{ cssr_conductor_ip }}/api/v1/config/candidate/authority/tenant
+    method: POST
+    body: "{{ lookup('template', 'cssr_configure_tenant.json.j2') }}"
+    body_format: json
+    validate_certs: no
+    status_code: 201
+    headers:
+      Authorization: "Bearer {{ web_auth.json.token }}"
+  register: config
+  loop:
+    - "{{ cssr_client }}"
+    - "{{site}}.{{ cssr_client }}"
+  ignore_errors: true
+
+- name: configure authority tenant lan interfaces
+  ansible.builtin.uri:
+    url: https://{{ cssr_conductor_ip }}/api/v1/config/candidate/authority/tenant
+    method: POST
+    body: "{{ lookup('template', 'cssr_configure_tenant_lan.json.j2') }}"
+    body_format: json
+    validate_certs: no
+    status_code: 201
+    headers:
+      Authorization: "Bearer {{ web_auth.json.token }}"
+  register: config
+  loop: "{{ cssr_depts }}"
+  ignore_errors: true
+
+- name: configure authority tenant services
+  ansible.builtin.uri:
+    url: https://{{ cssr_conductor_ip }}/api/v1/config/candidate/authority/service
+    method: POST
+    body: "{{ lookup('template', 'cssr_configure_service.json.j2') }}"
+    body_format: json
+    validate_certs: no
+    status_code: 201
+    headers:
+      Authorization: "Bearer {{ web_auth.json.token }}"
+  register: config
+  loop: "{{ cssr_depts }}"
+  ignore_errors: true
+
 - name: configure router
   ansible.builtin.uri:
     url: https://{{ cssr_conductor_ip }}/api/v1/config/candidate/authority/router
     method: POST
-    body: "{\"name\": \"{{ cssr_namespace }}-{{ cssr_routername }}\", \"interNodeSecurity\": \"internal\"}"
+    body: "{{ lookup('template', 'cssr_configure_router.json.j2') }}"
     body_format: json
     validate_certs: no
     status_code: 201
     headers:
       Authorization: "Bearer {{ web_auth.json.token }}"
-  register: config_router
-  until: config_router.status == 201
-  retries: 3
-  delay: 5
+  register: config
   ignore_errors: true
 
 - name: configure router node
   ansible.builtin.uri:
-    url: https://{{ cssr_conductor_ip }}/api/v1/config/candidate/authority/router/{{ cssr_namespace }}-{{ cssr_routername }}/node
+    url: https://{{ cssr_conductor_ip }}/api/v1/config/candidate/authority/router/{{ cssr_routername }}/node
     method: POST
-    body: "{\"name\": \"{{ cssr_namespace }}-{{ cssr_name }}\", \"assetId\": \"{{ cssr_namespace }}-{{ cssr_name }}\", \"role\": \"combo\" }"
+    body: "{{ lookup('template', 'cssr_configure_node.json.j2') }}"
     body_format: json
     validate_certs: no
     status_code: 201
     headers:
       Authorization: "Bearer {{ web_auth.json.token }}"
-  register: config_node
-  until: config_node.status == 201
-  retries: 3
-  delay: 5
+  register: config
+  ignore_errors: true
+
+- name: configure router node devices
+  ansible.builtin.uri:
+    url: https://{{ cssr_conductor_ip }}/api/v1/config/candidate/authority/router/{{ cssr_routername }}/node/{{ cssr_pod_name }}/device-interface
+    method: POST
+    body: "{{ lookup('template', 'cssr_configure_node_devices.json.j2') }}"
+    body_format: json
+    validate_certs: no
+    status_code: 201
+    headers:
+      Authorization: "Bearer {{ web_auth.json.token }}"
+  register: config
+  loop: "{{ cssr_depts }}"
+  ignore_errors: true
+
+- name: configure router node wan device
+  ansible.builtin.uri:
+    url: https://{{ cssr_conductor_ip }}/api/v1/config/candidate/authority/router/{{ cssr_routername }}/node/{{ cssr_pod_name }}/device-interface
+    method: POST
+    body: "{{ lookup('template', 'cssr_configure_node_wan_device.json.j2') }}"
+    body_format: json
+    validate_certs: no
+    status_code: 201
+    headers:
+      Authorization: "Bearer {{ web_auth.json.token }}"
+  register: config
   ignore_errors: true
 
 - name: validate and commit config
@@ -52,10 +131,8 @@
     status_code: 200
     headers:
       Authorization: "Bearer {{ web_auth.json.token }}"
-  register: commit_config
-  until: commit_config.status == 200
-  retries: 3
-  delay: 5
+  register: commit
+  until: commit.status == 200
 
 - name: wait for router to connect
   ansible.builtin.uri:

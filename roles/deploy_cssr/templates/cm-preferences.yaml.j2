@@ -6,10 +6,10 @@ metadata:
 data:
   preferences.json: |
     {
-    "node-name": "{{ cssr_namespace }}-{{ cssr_name }}-node-0",
+    "node-name": "{{ cssr_pod_name }}",
     "node-role": "combo",
-    "router-name": "{{ cssr_namespace }}-{{ cssr_routername }}",
-    "pdc-key-comment": "{{ cssr_namespace }}-{{ cssr_routername }}",
+    "router-name": "{{ cssr_routername }}",
+    "pdc-key-comment": "{{ cssr_routername }}",
     "bypass-compliance": true,
     "disable-tuning": true,
     "conductor": {"primary":{"ip":"{{ cssr_conductor_ip }}"}},

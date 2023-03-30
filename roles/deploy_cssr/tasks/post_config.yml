@@ -6,6 +6,9 @@
     cssr_site_id: "{{ lookup('ansible.builtin.vars', site).cssr_site_id }}"
     cssr_wan_id: "{{ lookup('ansible.builtin.vars', site).cssr_wan_id }}"
     cssr_depts: "{{ lookup('ansible.builtin.vars', site).cssr_depts }}"
+    cssr_wan_ipaddr: "{{ lookup('ansible.builtin.vars', site).cssr_wan_ipaddr }}"
+    cssr_pod_name: "{{ cssr_namespace }}-{{ cssr_name }}-node-0"
+    cssr_routername: "{{ cssr_namespace }}-{{ cssr_router_shortname }}"
 
 - name: create ip link script locally
   ansible.builtin.template:

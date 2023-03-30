@@ -1,0 +1,19 @@
+#jinja2: trim_blocks:False
+{
+      "name": "{{ cssr_routername }}",
+      "interNodeSecurity": "external",
+      "serviceRoute": [
+          {% for dept in cssr_depts %}
+          {
+              "name": "SR-{{ cssr_client }}-{{ site }}-{{ dept.lan_interface }}-server1",
+              "serviceName": "{{ cssr_client }}-{{ site }}-{{ dept.lan_interface }}-server1",
+              "nextHop": [
+                  {
+                      "nodeName": "{{ cssr_pod_name }}",
+                      "interface": "{{ dept.lan_interface | upper }}-int"
+                  }
+              ]
+          }{% if not loop.last %},{% endif %}
+           {% endfor %}
+      ]
+}

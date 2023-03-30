@@ -1,0 +1,11 @@
+{
+           "name": "{{ cssr_client }}-{{ site }}-{{ item.lan_interface }}-server1",
+           "address": [
+               "{{ item.cidr }}"
+           ],
+           "accessPolicy": [
+               {
+                   "source": "{{ site }}.{{ cssr_client }}"
+               }
+           ]
+}

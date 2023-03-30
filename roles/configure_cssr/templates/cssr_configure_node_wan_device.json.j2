@@ -1,0 +1,26 @@
+{
+                            "name": "WAN1",
+                            "targetInterface": "net2.{{ cssr_client_id }}.{{ cssr_site_id }}{{ cssr_wan_id }}",
+                            "bridgeName": "net2_br",
+                            "networkInterface": [
+                                {
+                                    "name": "WAN1-int",
+                                    "tenant": "{{ cssr_client }}",
+                                    "interRouterSecurity": "external",
+                                    "address": [
+                                        {
+                                            "ipAddress": "{{ cssr_wan_ipaddr }}",
+                                            "prefixLength": 24,
+                                            "hostService": [
+                                                {
+                                                    "serviceType": "ssh"
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "sourceNat": true,
+                                    "icmp": "allow"
+                                }
+                            ],
+                            "type": "bridged"
+       }
