@@ -10,7 +10,7 @@
     namespace: "{{ cssr_namespace }}"
   register: pod_status
   until: 'pod_status.resources | length > 0'
-  retries: 15
+  retries: 30
   delay: 20
 
 - name: set pod name variable

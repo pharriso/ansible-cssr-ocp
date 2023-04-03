@@ -4,8 +4,6 @@ ip link set up dev net1.{{ cssr_client_id }}
 ip link add link net1.{{ cssr_client_id }} name net1.{{ cssr_client_id }}.{{ cssr_site_id }}{{ dept.dept_id }} type vlan id {{ cssr_site_id }}{{ dept.dept_id }}
 ip link set up dev net1.{{ cssr_client_id }}.{{ cssr_site_id }}{{ dept.dept_id }}
 {% endfor %}
-
- 
 ip link add link net2 name net2.{{ cssr_client_id }} type vlan id {{ cssr_client_id }}
 ip link set up dev net2.{{ cssr_client_id }}
 ip link add link net2.{{ cssr_client_id }} name net2.{{ cssr_client_id }}.{{ cssr_wan_client }}{{ cssr_wan_id }} type vlan id {{ cssr_wan_client }}{{ cssr_wan_id }}
