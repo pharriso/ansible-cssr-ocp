@@ -4,4 +4,5 @@
   hosts: localhost
   gather_facts: false
   roles:
+  - cssr_facts
   - configure_cssr

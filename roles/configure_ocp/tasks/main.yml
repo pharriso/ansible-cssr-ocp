@@ -26,4 +26,4 @@
   kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('template', 'network-attachment-macvlan.yaml.j2') | from_yaml }}"
-  loop: "{{ lookup('ansible.builtin.vars', site).cssr_network_attachments }}"
+  loop: "{{ lookup('ansible.builtin.vars', client).cssr_network_attachments }}"

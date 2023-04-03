@@ -2,27 +2,31 @@
 
 site33:
   cssr_site_id: 33
-  cssr_client: client3
-  cssr_network_attachments:
-    - ens6f0np0
-    - ens6f1np1
-  cssr_pvc_size: 512Mi
-  cssr_client_id: 3100
   cssr_depts:
     - dept_id: 10
-      lan_interface: lan1
       cidr: 192.168.101.0/24
       ip_addr: 192.168.101.253
       gateway: 192.168.101.1
     - dept_id: 20
-      lan_interface: lan2
       cidr: 192.168.102.0/24
       ip_addr: 192.168.102.253
       gateway: 192.168.102.1
     - dept_id: 30
-      lan_interface: lan3
       cidr: 192.168.103.0/24
       ip_addr: 192.168.103.253
       gateway: 192.168.103.1
-  cssr_wan_id: 11
-  cssr_wan_ipaddr: 192.168.111.253
+site34:
+  cssr_site_id: 34
+  cssr_depts:
+    - dept_id: 10
+      cidr: 192.168.104.0/24
+      ip_addr: 192.168.104.253
+      gateway: 192.168.104.1
+    - dept_id: 20
+      cidr: 192.168.105.0/24
+      ip_addr: 192.168.105.253
+      gateway: 192.168.105.1
+    - dept_id: 30
+      cidr: 192.168.106.0/24
+      ip_addr: 192.168.106.253
+      gateway: 192.168.106.1

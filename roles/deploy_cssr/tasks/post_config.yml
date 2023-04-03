@@ -11,24 +11,36 @@
     pod: "{{ cssr_pod }}"
     remote_path: /tmp/
     local_path: /tmp/cssr_qinq.sh
+  register: iplink_script
 
 - name: stop 128T service
   kubernetes.core.k8s_exec:
     namespace: "{{ cssr_namespace }}"
     pod: "{{ cssr_pod }}"
     command: systemctl stop 128T
+  when: iplink_script is changed
 
 - name: execute link qinq script
   kubernetes.core.k8s_exec:
     namespace: "{{ cssr_namespace }}"
     pod: "{{ cssr_pod }}"
     command: bash /tmp/cssr_qinq.sh
+  when: iplink_script is changed
+
+- name: see if we need to initialise
+  kubernetes.core.k8s_exec:
+    namespace: "{{ cssr_namespace }}"
+    pod: "{{ cssr_pod }}"
+    command: grep {{ cssr_routername }} /etc/128technology/global.init
+  register: check_config
+  ignore_errors: true
 
 - name: initialise cssr pod
   kubernetes.core.k8s_exec:
     namespace: "{{ cssr_namespace }}"
     pod: "{{ cssr_pod }}"
     command: initialize128t --preferences /etc/preferences.json
+  when: check_config.rc != 0
 
 - name: start salt minion in pod
   kubernetes.core.k8s_exec:

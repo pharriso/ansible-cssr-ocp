@@ -1,0 +1,15 @@
+---
+
+- name: set facts for site configuration
+  ansible.builtin.set_fact:
+    cssr_client_id: "{{ lookup('ansible.builtin.vars', client).cssr_client_id }}"
+    cssr_client: "{{ client }}"
+    cssr_site_id: "{{ lookup('ansible.builtin.vars', site).cssr_site_id }}"
+    cssr_wan_id: "{{ lookup('ansible.builtin.vars', client).cssr_wan_id }}"
+    cssr_wan_ipaddr: "{{ lookup('ansible.builtin.vars', client).cssr_wan_ipaddr }}"
+    cssr_depts: "{{ lookup('ansible.builtin.vars', site).cssr_depts }}"
+    cssr_pod_name: "{{ lookup('ansible.builtin.vars', client).cssr_namespace }}-{{ lookup('ansible.builtin.vars', client).cssr_name }}-node-0"
+    cssr_routername: "{{ lookup('ansible.builtin.vars', client).cssr_namespace }}-{{ lookup('ansible.builtin.vars', client).cssr_router_shortname }}"
+    cssr_namespace: "{{ lookup('ansible.builtin.vars', client).cssr_namespace }}"
+    cssr_name: "{{ lookup('ansible.builtin.vars', client).cssr_name }}"
+    cssr_wan_client: "{{ lookup('ansible.builtin.vars', client).cssr_wan_client }}"

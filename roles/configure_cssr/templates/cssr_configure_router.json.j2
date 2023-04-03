@@ -5,12 +5,12 @@
       "serviceRoute": [
           {% for dept in cssr_depts %}
           {
-              "name": "SR-{{ cssr_client }}-{{ site }}-{{ dept.lan_interface }}-server1",
-              "serviceName": "{{ cssr_client }}-{{ site }}-{{ dept.lan_interface }}-server1",
+              "name": "SR-{{ cssr_client }}-{{ site }}-lan{{ cssr_site_id }}{{ dept.dept_id }}-server1",
+              "serviceName": "{{ cssr_client }}-{{ site }}-lan{{ cssr_site_id }}{{ dept.dept_id }}-server1",
               "nextHop": [
                   {
                       "nodeName": "{{ cssr_pod_name }}",
-                      "interface": "{{ dept.lan_interface | upper }}-int"
+                      "interface": "lan{{ cssr_site_id }}{{ dept.dept_id }}-int"
                   }
               ]
           }{% if not loop.last %},{% endif %}

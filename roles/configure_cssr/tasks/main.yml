@@ -1,17 +1,5 @@
 ---
 
-- name: set facts for site configuration
-  ansible.builtin.set_fact:
-    cssr_client_id: "{{ lookup('ansible.builtin.vars', site).cssr_client_id }}"
-    cssr_site_id: "{{ lookup('ansible.builtin.vars', site).cssr_site_id }}"
-    cssr_wan_id: "{{ lookup('ansible.builtin.vars', site).cssr_wan_id }}"
-    cssr_depts: "{{ lookup('ansible.builtin.vars', site).cssr_depts }}"
-    cssr_wan_ipaddr: "{{ lookup('ansible.builtin.vars', site).cssr_wan_ipaddr }}"
-    cssr_client: "{{ lookup('ansible.builtin.vars', site).cssr_client }}"
-    cssr_pod_name: "{{ cssr_namespace }}-{{ cssr_name }}-node-0"
-    cssr_routername: "{{ cssr_namespace }}-{{ cssr_router_shortname }}"
-
-
 - name: authenticate to conductor
   ansible.builtin.uri:
     url: https://{{ cssr_conductor_ip }}/api/v1/login
@@ -38,7 +26,9 @@
   loop:
     - "{{ cssr_client }}"
     - "{{site}}.{{ cssr_client }}"
+      #failed_when: config.status != 201 or "already exists" not in config.json.message
   ignore_errors: true
+
 
 - name: configure authority tenant lan interfaces
   ansible.builtin.uri:

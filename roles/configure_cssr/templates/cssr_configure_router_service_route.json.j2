@@ -1,0 +1,77 @@
+#jinja2: trim_blocks:False
+{
+                    "name": "node1",
+                    "assetId": "{{ cssr_namespace }}-{{ cssr_name }}-node-0",
+                    "role": "combo",
+                    "deviceInterface": [
+                        {% for dept in cssr_depts %}
+                        {
+                            "name": "{{ dept.lan_interface | upper }}",
+                            "targetInterface": "net1.{{ cssr_client_id }}.{{ cssr_site_id }}{{ dept.dept_id }}",
+                            "bridgeName": "net1_br{{ cssr_site_id }}{{ dept.dept_id }}",
+                            "networkInterface": [
+                                {
+                                    "name": "{{ dept.lan_interface | upper }}-int",
+                                    "tenant": "{{ dept.lan_interface | upper }}.{{ cssr_site_id }}-{{ cssr_client }}",
+                                    "interRouterSecurity": "external",
+                                    "address": [
+                                        {
+                                            "ipAddress": "{{ dept.ip_addr }}",
+                                            "prefixLength": 24,
+                                            "gateway": "{{ dept.gateway }}",
+                                            "hostService": [
+                                                {
+                                                    "serviceType": "ssh"
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "sourceNat": true,
+                                    "icmp": "allow"
+                                }
+                            ],
+                            "type": "bridged"
+                        },
+                        {% endfor %}
+                        {
+                            "name": "WAN1",
+                            "targetInterface": "net2.{{ cssr_client_id }}.{{ cssr_site_id }}{{ cssr_wan_id }}",
+                            "bridgeName": "net2_br",
+                            "networkInterface": [
+                                {
+                                    "name": "WAN1-int",
+                                    "tenant": "client-2",
+                                    "interRouterSecurity": "external",
+                                    "address": [
+                                        {
+                                            "ipAddress": "{{ cssr_wan_ipaddr }}",
+                                            "prefixLength": 24,
+                                            "hostService": [
+                                                {
+                                                    "serviceType": "ssh"
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "sourceNat": true,
+                                    "icmp": "allow"
+                                }
+                            ],
+                            "type": "bridged"
+                        }
+                    ]
+                }
+           ],
+            "serviceRoute": [
+                {% for dept in cssr_depts %}
+                {
+                    "name": "SR-{{ cssr_client }}-{{ site }}-{{ dept.lan_interface }}-server1",
+                    "serviceName": "{ cssr_client }}-{{ site }}-{{ dept.lan_interface }}-server1",
+                    "nextHop": [
+                        {
+                            "nodeName": "node1",
+                            "interface": "{{ dept.lan_interface }}-int"
+                        }
+                    ]
+                }{% if not loop.last %},{% endif %}
+                {% endfor %}
