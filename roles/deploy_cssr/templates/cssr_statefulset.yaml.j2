@@ -22,7 +22,7 @@ spec:
         app: {{ cssr_name | lower }}
     spec:
       nodeSelector:
-        kubernetes.io/hostname: master-0
+        kubernetes.io/hostname: {{ ocp_node }}
       initContainers:
       - name: init-modules
         image: image-registry.openshift-image-registry.svc:5000/default/cssr-init:latest

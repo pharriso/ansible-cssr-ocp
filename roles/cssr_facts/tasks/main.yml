@@ -13,3 +13,4 @@
     cssr_namespace: "{{ lookup('ansible.builtin.vars', client).cssr_namespace }}"
     cssr_name: "{{ lookup('ansible.builtin.vars', client).cssr_name }}"
     cssr_wan_client: "{{ lookup('ansible.builtin.vars', client).cssr_wan_client }}"
+    ocp_node: "{{ lookup('ansible.builtin.vars', client).ocp_node }}"

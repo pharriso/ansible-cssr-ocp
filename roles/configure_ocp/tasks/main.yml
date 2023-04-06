@@ -17,6 +17,11 @@
     state: present
     definition: "{{ lookup('template', 'sa_permissions.yaml.j2') | from_yaml }}"
 
+- name: create role binding for sa
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'sa_role_bindings.yaml.j2') | from_yaml }}"
+
 - name: assign permissions to pull images from default namespace
   kubernetes.core.k8s:
     state: present

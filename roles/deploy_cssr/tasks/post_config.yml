@@ -3,29 +3,34 @@
 - name: create ip link script locally
   ansible.builtin.template:
     src: cssr_qinq.sh.j2
-    dest: /tmp/cssr_qinq.sh
+    dest: /tmp/cssr_qinq_{{ cssr_site_id }}.sh
 
 - name: copy script into pod
   kubernetes.core.k8s_cp:
     namespace: "{{ cssr_namespace }}"
     pod: "{{ cssr_pod }}"
-    remote_path: /tmp/
-    local_path: /tmp/cssr_qinq.sh
-  register: iplink_script
+    remote_path: /etc/cssr_qinq/cssr_qinq_{{ cssr_site_id }}.sh
+    local_path: /tmp/cssr_qinq_{{ cssr_site_id }}.sh
 
 - name: stop 128T service
   kubernetes.core.k8s_exec:
     namespace: "{{ cssr_namespace }}"
     pod: "{{ cssr_pod }}"
     command: systemctl stop 128T
-  when: iplink_script is changed
 
-- name: execute link qinq script
+- name: find qinq scripts
   kubernetes.core.k8s_exec:
     namespace: "{{ cssr_namespace }}"
     pod: "{{ cssr_pod }}"
-    command: bash /tmp/cssr_qinq.sh
-  when: iplink_script is changed
+    command: ls /etc/cssr_qinq/
+  register: qinq_scripts
+
+- name: execute link qinq scripts
+  kubernetes.core.k8s_exec:
+    namespace: "{{ cssr_namespace }}"
+    pod: "{{ cssr_pod }}"
+    command: bash /etc/cssr_qinq/{{ item }}
+  loop: "{{ qinq_scripts.stdout_lines }}"
 
 - name: see if we need to initialise
   kubernetes.core.k8s_exec:
