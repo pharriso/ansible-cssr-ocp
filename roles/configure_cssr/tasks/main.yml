@@ -44,7 +44,7 @@
   loop: "{{ cssr_depts }}"
   ignore_errors: true
 
-- name: configure authority tenant services
+- name: configure authority tenant lan services
   ansible.builtin.uri:
     url: https://{{ cssr_conductor_ip }}/api/v1/config/candidate/authority/service
     method: POST
@@ -58,11 +58,37 @@
   loop: "{{ cssr_depts }}"
   ignore_errors: true
 
+- name: configure authority tenant wan services
+  ansible.builtin.uri:
+    url: https://{{ cssr_conductor_ip }}/api/v1/config/candidate/authority/service
+    method: POST
+    body: "{{ lookup('template', 'cssr_configure_service_wan.json.j2') }}"
+    body_format: json
+    validate_certs: no
+    status_code: 201
+    headers:
+      Authorization: "Bearer {{ web_auth.json.token }}"
+  register: config
+  ignore_errors: true
+
 - name: configure router
   ansible.builtin.uri:
     url: https://{{ cssr_conductor_ip }}/api/v1/config/candidate/authority/router
     method: POST
     body: "{{ lookup('template', 'cssr_configure_router.json.j2') }}"
+    body_format: json
+    validate_certs: no
+    status_code: 201
+    headers:
+      Authorization: "Bearer {{ web_auth.json.token }}"
+  register: config
+  ignore_errors: true
+
+- name: configure wan service route
+  ansible.builtin.uri:
+    url: https://{{ cssr_conductor_ip }}/api/v1/config/candidate/authority/router
+    method: POST
+    body: "{{ lookup('template', 'cssr_configure_service_route_wan.json.j2') }}"
     body_format: json
     validate_certs: no
     status_code: 201

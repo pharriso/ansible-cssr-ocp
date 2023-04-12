@@ -11,4 +11,6 @@ client4:
   cssr_client_id: 4
   cssr_wan_id: 11
   cssr_wan_ipaddr: 192.168.111.253
+  cssr_wan_cidr: 192.168.111.0/24
   cssr_wan_client: 33
+  ocp_node: master-0

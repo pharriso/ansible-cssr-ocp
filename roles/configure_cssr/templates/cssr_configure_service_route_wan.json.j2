@@ -1,0 +1,17 @@
+#jinja2: trim_blocks:False
+{
+      "name": "{{ cssr_routername }}",
+      "interNodeSecurity": "external",
+      "serviceRoute": [
+          {
+              "name": "SR-{{ cssr_client }}-wan-server1",
+              "serviceName": "{{ cssr_client }}-wan-server1",
+              "nextHop": [
+                  {
+                      "nodeName": "{{ cssr_pod_name }}",
+                      "interface": "WAN1-int"
+                  }
+              ]
+          }
+      ]
+}
