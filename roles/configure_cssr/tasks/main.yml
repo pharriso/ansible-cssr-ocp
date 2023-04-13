@@ -84,9 +84,23 @@
   register: config
   ignore_errors: true
 
+- name: configure service routes
+  ansible.builtin.uri:
+    url: https://{{ cssr_conductor_ip }}/api/v1/config/candidate/authority/router/{{ cssr_routername }}/service-route
+    method: POST
+    body: "{{ lookup('template', 'cssr_configure_service_route.json.j2') }}"
+    body_format: json
+    validate_certs: no
+    status_code: 201
+    headers:
+      Authorization: "Bearer {{ web_auth.json.token }}"
+  register: config
+  loop: "{{ cssr_depts }}"
+  ignore_errors: true
+
 - name: configure wan service route
   ansible.builtin.uri:
-    url: https://{{ cssr_conductor_ip }}/api/v1/config/candidate/authority/router
+    url: https://{{ cssr_conductor_ip }}/api/v1/config/candidate/authority/router/{{ cssr_routername }}/service-route
     method: POST
     body: "{{ lookup('template', 'cssr_configure_service_route_wan.json.j2') }}"
     body_format: json
