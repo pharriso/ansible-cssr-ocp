@@ -26,9 +26,10 @@
   loop:
     - "{{ cssr_client }}"
     - "{{site}}.{{ cssr_client }}"
-      #failed_when: config.status != 201 or "already exists" not in config.json.message
-  ignore_errors: true
-
+  failed_when: 
+    - config.status != 201
+    - config.json.message is defined
+    - "'already exists' not in config.json.message"
 
 - name: configure authority tenant lan interfaces
   ansible.builtin.uri:
@@ -42,7 +43,10 @@
       Authorization: "Bearer {{ web_auth.json.token }}"
   register: config
   loop: "{{ cssr_depts }}"
-  ignore_errors: true
+  failed_when: 
+    - config.status != 201
+    - config.json.message is defined
+    - "'already exists' not in config.json.message"
 
 - name: configure authority tenant lan services
   ansible.builtin.uri:
@@ -56,7 +60,10 @@
       Authorization: "Bearer {{ web_auth.json.token }}"
   register: config
   loop: "{{ cssr_depts }}"
-  ignore_errors: true
+  failed_when: 
+    - config.status != 201
+    - config.json.message is defined
+    - "'already exists' not in config.json.message"
 
 - name: configure authority tenant wan services
   ansible.builtin.uri:
@@ -69,7 +76,10 @@
     headers:
       Authorization: "Bearer {{ web_auth.json.token }}"
   register: config
-  ignore_errors: true
+  failed_when: 
+    - config.status != 201
+    - config.json.message is defined
+    - "'already exists' not in config.json.message"
 
 - name: configure router
   ansible.builtin.uri:
@@ -82,7 +92,10 @@
     headers:
       Authorization: "Bearer {{ web_auth.json.token }}"
   register: config
-  ignore_errors: true
+  failed_when: 
+    - config.status != 201
+    - config.json.message is defined
+    - "'already exists' not in config.json.message"
 
 - name: configure service routes
   ansible.builtin.uri:
@@ -96,7 +109,10 @@
       Authorization: "Bearer {{ web_auth.json.token }}"
   register: config
   loop: "{{ cssr_depts }}"
-  ignore_errors: true
+  failed_when: 
+    - config.status != 201
+    - config.json.message is defined
+    - "'already exists' not in config.json.message"
 
 - name: configure wan service route
   ansible.builtin.uri:
@@ -109,7 +125,10 @@
     headers:
       Authorization: "Bearer {{ web_auth.json.token }}"
   register: config
-  ignore_errors: true
+  failed_when: 
+    - config.status != 201
+    - config.json.message is defined
+    - "'already exists' not in config.json.message"
 
 - name: configure router node
   ansible.builtin.uri:
@@ -122,7 +141,10 @@
     headers:
       Authorization: "Bearer {{ web_auth.json.token }}"
   register: config
-  ignore_errors: true
+  failed_when: 
+    - config.status != 201
+    - config.json.message is defined
+    - "'already exists' not in config.json.message"
 
 - name: configure router node devices
   ansible.builtin.uri:
@@ -136,7 +158,10 @@
       Authorization: "Bearer {{ web_auth.json.token }}"
   register: config
   loop: "{{ cssr_depts }}"
-  ignore_errors: true
+  failed_when: 
+    - config.status != 201
+    - config.json.message is defined
+    - "'already exists' not in config.json.message"
 
 - name: configure router node wan device
   ansible.builtin.uri:
@@ -149,7 +174,10 @@
     headers:
       Authorization: "Bearer {{ web_auth.json.token }}"
   register: config
-  ignore_errors: true
+  failed_when: 
+    - config.status != 201
+    - config.json.message is defined
+    - "'already exists' not in config.json.message"
 
 - name: validate and commit config
   ansible.builtin.uri:
