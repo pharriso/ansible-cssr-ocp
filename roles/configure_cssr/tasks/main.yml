@@ -30,6 +30,9 @@
     - config.status != 201
     - config.json.message is defined
     - "'already exists' not in config.json.message"
+  changed_when: 
+    - config.status == 201
+    - config.json.message is not defined
 
 - name: configure authority tenant lan interfaces
   ansible.builtin.uri:
@@ -47,6 +50,9 @@
     - config.status != 201
     - config.json.message is defined
     - "'already exists' not in config.json.message"
+  changed_when: 
+    - config.status == 201
+    - config.json.message is not defined
 
 - name: configure authority tenant lan services
   ansible.builtin.uri:
@@ -64,6 +70,9 @@
     - config.status != 201
     - config.json.message is defined
     - "'already exists' not in config.json.message"
+  changed_when: 
+    - config.status == 201
+    - config.json.message is not defined
 
 - name: configure authority tenant wan services
   ansible.builtin.uri:
@@ -80,6 +89,9 @@
     - config.status != 201
     - config.json.message is defined
     - "'already exists' not in config.json.message"
+  changed_when: 
+    - config.status == 201
+    - config.json.message is not defined
 
 - name: configure router
   ansible.builtin.uri:
@@ -96,6 +108,9 @@
     - config.status != 201
     - config.json.message is defined
     - "'already exists' not in config.json.message"
+  changed_when: 
+    - config.status == 201
+    - config.json.message is not defined
 
 - name: configure service routes
   ansible.builtin.uri:
@@ -113,6 +128,9 @@
     - config.status != 201
     - config.json.message is defined
     - "'already exists' not in config.json.message"
+  changed_when: 
+    - config.status == 201
+    - config.json.message is not defined
 
 - name: configure wan service route
   ansible.builtin.uri:
@@ -129,6 +147,9 @@
     - config.status != 201
     - config.json.message is defined
     - "'already exists' not in config.json.message"
+  changed_when: 
+    - config.status == 201
+    - config.json.message is not defined
 
 - name: configure router node
   ansible.builtin.uri:
@@ -145,6 +166,9 @@
     - config.status != 201
     - config.json.message is defined
     - "'already exists' not in config.json.message"
+  changed_when: 
+    - config.status == 201
+    - config.json.message is not defined
 
 - name: configure router node devices
   ansible.builtin.uri:
@@ -162,6 +186,9 @@
     - config.status != 201
     - config.json.message is defined
     - "'already exists' not in config.json.message"
+  changed_when: 
+    - config.status == 201
+    - config.json.message is not defined
 
 - name: configure router node wan device
   ansible.builtin.uri:
@@ -178,6 +205,9 @@
     - config.status != 201
     - config.json.message is defined
     - "'already exists' not in config.json.message"
+  changed_when: 
+    - config.status == 201
+    - config.json.message is not defined
 
 - name: validate and commit config
   ansible.builtin.uri:
