@@ -45,3 +45,18 @@ site35:
       cidr: 192.168.109.0/24
       ip_addr: 192.168.109.253
       gateway: 192.168.109.1
+site36:
+  cssr_site_id: 36
+  cssr_depts:
+    - dept_id: 10
+      cidr: 192.168.107.0/24
+      ip_addr: 192.168.107.253
+      gateway: 192.168.107.1
+    - dept_id: 20
+      cidr: 192.168.108.0/24
+      ip_addr: 192.168.108.253
+      gateway: 192.168.108.1
+    - dept_id: 30
+      cidr: 192.168.109.0/24
+      ip_addr: 192.168.109.253
+      gateway: 192.168.109.1
