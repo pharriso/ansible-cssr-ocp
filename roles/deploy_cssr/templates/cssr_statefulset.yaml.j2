@@ -24,28 +24,6 @@ spec:
       nodeSelector:
         kubernetes.io/hostname: {{ ocp_node }}
       initContainers:
-      - name: init-modules
-        image: image-registry.openshift-image-registry.svc:5000/default/cssr-init:latest
-        command: ["/bin/bash"]
-        args:
-        - -c
-        - >-
-          set -x &&
-          if [ ! -d /usr/src/kernels/$(uname -r) ]
-            then dnf install -y --enablerepo=rhel-8-for-x86_64-baseos-eus-rpms kernel-devel-$(uname -r)
-          fi &&
-          if [ ! -d /usr/lib/modules/$(uname -r) ]
-            then cp -RPfp /mnt/$(uname -r) /usr/lib/modules
-          fi
-        volumeMounts:
-        - mountPath: /usr/lib/modules
-          name: modules
-          subPath: modules
-        - mountPath: /usr/src/kernels
-          name: modules
-          subPath: kernels
-        - mountPath: /mnt
-          name: modules-node
       - name: cssr-init-data
         image: quay.io/juniper-128t/128t-5121:latest
         securityContext:
@@ -60,26 +38,6 @@ spec:
         volumeMounts:
         - mountPath: /mnt
           name: {{ cssr_name | lower }}-data
-      - name: cssr-kmod-builder
-        image: quay.io/juniper-128t/kmod-builder-51:latest
-        securityContext:
-          privileged: true
-        command: ["/bin/bash"]
-        args:
-        - -c
-        - >-
-          set -x &&
-          export DPDK_PATH="/usr/lib/modules/$(uname -r)/dpdk" &&
-          if [ ! -d ${DPDK_PATH} ] || [ ! -f ${DPDK_PATH}/igb_uio.ko ] || [ ! -f ${DPDK_PATH}/rte_kni.ko ]
-            then /usr/bin/dpdk_build.sh /usr/share/128technology/dpdk/src
-          fi
-        volumeMounts:
-        - mountPath: /usr/lib/modules
-          name: modules
-          subPath: modules
-        - mountPath: /usr/src/kernels
-          name: modules
-          subPath: kernels
       containers:
       - image: quay.io/juniper-128t/128t-5121:latest
         imagePullPolicy: Always
@@ -138,6 +96,9 @@ spec:
       - name: modules
         persistentVolumeClaim:
           claimName: {{ cssr_name }}-modules
+        hostPath:
+          path: /mnt/cssr
+          type: Directory
       - hostPath:
           path: /dev
           type: Directory
