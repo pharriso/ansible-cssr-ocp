@@ -1,0 +1,11 @@
+---
+
+- name: create persistent volume claim
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'cssr_modules_pvc.yaml.j2') | from_yaml }}"
+
+- name: deploy cssr statefulset to openshift namespace
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'cssr_statefulset.yaml.j2') | from_yaml }}"

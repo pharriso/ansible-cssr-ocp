@@ -1,0 +1,25 @@
+---
+
+- name: include config_maps.yml
+  include_tasks:
+    file: config_maps.yml
+    apply:
+      tags:
+        - deploy_cssr
+  tags:
+    - always
+
+- name: include deploy.yml
+  include_tasks:
+    file: deploy.yml
+    apply:
+      tags:
+        - deploy_cssr
+  tags:
+    - always
+
+- name: include pod_status.yml
+  include_tasks: pod_status.yml
+
+- name: include post_config.yml
+  include_tasks: post_config.yml

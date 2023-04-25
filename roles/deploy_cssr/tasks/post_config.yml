@@ -1,0 +1,81 @@
+---
+
+- name: create ip link script locally
+  ansible.builtin.template:
+    src: cssr_qinq.sh.j2
+    dest: /tmp/cssr_qinq_{{ cssr_site_id }}.sh
+
+- name: copy script into pod
+  kubernetes.core.k8s_cp:
+    namespace: "{{ cssr_namespace }}"
+    pod: "{{ cssr_pod }}"
+    remote_path: /etc/cssr_qinq/cssr_qinq_{{ cssr_site_id }}.sh
+    local_path: /tmp/cssr_qinq_{{ cssr_site_id }}.sh
+
+- name: stop 128T service
+  kubernetes.core.k8s_exec:
+    namespace: "{{ cssr_namespace }}"
+    pod: "{{ cssr_pod }}"
+    command: systemctl stop 128T
+
+- name: pause after 128T stop
+  ansible.builtin.pause:
+    seconds: 10
+
+- name: find qinq scripts
+  kubernetes.core.k8s_exec:
+    namespace: "{{ cssr_namespace }}"
+    pod: "{{ cssr_pod }}"
+    command: ls /etc/cssr_qinq/
+  register: qinq_scripts
+
+- name: execute link qinq scripts
+  kubernetes.core.k8s_exec:
+    namespace: "{{ cssr_namespace }}"
+    pod: "{{ cssr_pod }}"
+    command: bash /etc/cssr_qinq/{{ item }}
+  loop: "{{ qinq_scripts.stdout_lines }}"
+
+- name: see if we need to initialise
+  kubernetes.core.k8s_exec:
+    namespace: "{{ cssr_namespace }}"
+    pod: "{{ cssr_pod }}"
+    command: grep {{ cssr_routername }} /etc/128technology/global.init
+  register: check_config
+  ignore_errors: true
+
+- name: initialise cssr pod
+  kubernetes.core.k8s_exec:
+    namespace: "{{ cssr_namespace }}"
+    pod: "{{ cssr_pod }}"
+    command: initialize128t --preferences /etc/preferences.json
+  when: check_config.rc != 0
+
+- name: copy core update script into pod
+  kubernetes.core.k8s_cp:
+    namespace: "{{ cssr_namespace }}"
+    pod: "{{ cssr_pod }}"
+    remote_path: /usr/local/bin
+    local_path: "{{ role_path }}/files/core_update.py"
+
+- name: execute link qinq scripts
+  kubernetes.core.k8s_exec:
+    namespace: "{{ cssr_namespace }}"
+    pod: "{{ cssr_pod }}"
+    command: python /usr/local/bin/core_update.py
+
+- name: start salt minion in pod
+  kubernetes.core.k8s_exec:
+    namespace: "{{ cssr_namespace }}"
+    pod: "{{ cssr_pod }}"
+    command: systemctl restart salt-minion
+
+- name: pause before 128T start
+  ansible.builtin.pause:
+    seconds: 10
+
+- name: start 128T service
+  kubernetes.core.k8s_exec:
+    namespace: "{{ cssr_namespace }}"
+    pod: "{{ cssr_pod }}"
+    command: systemctl start 128T

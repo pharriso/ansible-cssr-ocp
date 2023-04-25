@@ -1,0 +1,11 @@
+{
+           "name": "{{ cssr_client }}-wan-server1",
+           "address": [
+               "{{ cssr_wan_cidr }}"
+           ],
+           "accessPolicy": [
+               {
+                   "source": "{{ cssr_client }}"
+               }
+           ]
+}

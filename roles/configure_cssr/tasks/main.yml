@@ -1,0 +1,235 @@
+---
+
+- name: authenticate to conductor
+  ansible.builtin.uri:
+    url: https://{{ cssr_conductor_ip }}/api/v1/login
+    method: POST
+    body: "{\"username\": \"{{ cssr_conductor_user }}\",\"password\": \"{{ cssr_conductor_password }}\"}"
+    body_format: json
+    validate_certs: no
+  register: web_auth
+  until: web_auth.status == 200
+  retries: 3
+  delay: 5
+
+- name: configure authority tenant
+  ansible.builtin.uri:
+    url: https://{{ cssr_conductor_ip }}/api/v1/config/candidate/authority/tenant
+    method: POST
+    body: "{{ lookup('template', 'cssr_configure_tenant.json.j2') }}"
+    body_format: json
+    validate_certs: no
+    status_code: 201
+    headers:
+      Authorization: "Bearer {{ web_auth.json.token }}"
+  register: config
+  loop:
+    - "{{ cssr_client }}"
+    - "{{site}}.{{ cssr_client }}"
+  failed_when: 
+    - config.status != 201
+    - config.json.message is defined
+    - "'already exists' not in config.json.message"
+  changed_when: 
+    - config.status == 201
+    - config.json.message is not defined
+
+- name: configure authority tenant lan interfaces
+  ansible.builtin.uri:
+    url: https://{{ cssr_conductor_ip }}/api/v1/config/candidate/authority/tenant
+    method: POST
+    body: "{{ lookup('template', 'cssr_configure_tenant_lan.json.j2') }}"
+    body_format: json
+    validate_certs: no
+    status_code: 201
+    headers:
+      Authorization: "Bearer {{ web_auth.json.token }}"
+  register: config
+  loop: "{{ cssr_depts }}"
+  failed_when: 
+    - config.status != 201
+    - config.json.message is defined
+    - "'already exists' not in config.json.message"
+  changed_when: 
+    - config.status == 201
+    - config.json.message is not defined
+
+- name: configure authority tenant lan services
+  ansible.builtin.uri:
+    url: https://{{ cssr_conductor_ip }}/api/v1/config/candidate/authority/service
+    method: POST
+    body: "{{ lookup('template', 'cssr_configure_service.json.j2') }}"
+    body_format: json
+    validate_certs: no
+    status_code: 201
+    headers:
+      Authorization: "Bearer {{ web_auth.json.token }}"
+  register: config
+  loop: "{{ cssr_depts }}"
+  failed_when: 
+    - config.status != 201
+    - config.json.message is defined
+    - "'already exists' not in config.json.message"
+  changed_when: 
+    - config.status == 201
+    - config.json.message is not defined
+
+- name: configure authority tenant wan services
+  ansible.builtin.uri:
+    url: https://{{ cssr_conductor_ip }}/api/v1/config/candidate/authority/service
+    method: POST
+    body: "{{ lookup('template', 'cssr_configure_service_wan.json.j2') }}"
+    body_format: json
+    validate_certs: no
+    status_code: 201
+    headers:
+      Authorization: "Bearer {{ web_auth.json.token }}"
+  register: config
+  failed_when: 
+    - config.status != 201
+    - config.json.message is defined
+    - "'already exists' not in config.json.message"
+  changed_when: 
+    - config.status == 201
+    - config.json.message is not defined
+
+- name: configure router
+  ansible.builtin.uri:
+    url: https://{{ cssr_conductor_ip }}/api/v1/config/candidate/authority/router
+    method: POST
+    body: "{{ lookup('template', 'cssr_configure_router.json.j2') }}"
+    body_format: json
+    validate_certs: no
+    status_code: 201
+    headers:
+      Authorization: "Bearer {{ web_auth.json.token }}"
+  register: config
+  failed_when: 
+    - config.status != 201
+    - config.json.message is defined
+    - "'already exists' not in config.json.message"
+  changed_when: 
+    - config.status == 201
+    - config.json.message is not defined
+
+- name: configure service routes
+  ansible.builtin.uri:
+    url: https://{{ cssr_conductor_ip }}/api/v1/config/candidate/authority/router/{{ cssr_routername }}/service-route
+    method: POST
+    body: "{{ lookup('template', 'cssr_configure_service_route.json.j2') }}"
+    body_format: json
+    validate_certs: no
+    status_code: 201
+    headers:
+      Authorization: "Bearer {{ web_auth.json.token }}"
+  register: config
+  loop: "{{ cssr_depts }}"
+  failed_when: 
+    - config.status != 201
+    - config.json.message is defined
+    - "'already exists' not in config.json.message"
+  changed_when: 
+    - config.status == 201
+    - config.json.message is not defined
+
+- name: configure wan service route
+  ansible.builtin.uri:
+    url: https://{{ cssr_conductor_ip }}/api/v1/config/candidate/authority/router/{{ cssr_routername }}/service-route
+    method: POST
+    body: "{{ lookup('template', 'cssr_configure_service_route_wan.json.j2') }}"
+    body_format: json
+    validate_certs: no
+    status_code: 201
+    headers:
+      Authorization: "Bearer {{ web_auth.json.token }}"
+  register: config
+  failed_when: 
+    - config.status != 201
+    - config.json.message is defined
+    - "'already exists' not in config.json.message"
+  changed_when: 
+    - config.status == 201
+    - config.json.message is not defined
+
+- name: configure router node
+  ansible.builtin.uri:
+    url: https://{{ cssr_conductor_ip }}/api/v1/config/candidate/authority/router/{{ cssr_routername }}/node
+    method: POST
+    body: "{{ lookup('template', 'cssr_configure_node.json.j2') }}"
+    body_format: json
+    validate_certs: no
+    status_code: 201
+    headers:
+      Authorization: "Bearer {{ web_auth.json.token }}"
+  register: config
+  failed_when: 
+    - config.status != 201
+    - config.json.message is defined
+    - "'already exists' not in config.json.message"
+  changed_when: 
+    - config.status == 201
+    - config.json.message is not defined
+
+- name: configure router node devices
+  ansible.builtin.uri:
+    url: https://{{ cssr_conductor_ip }}/api/v1/config/candidate/authority/router/{{ cssr_routername }}/node/{{ cssr_pod_name }}/device-interface
+    method: POST
+    body: "{{ lookup('template', 'cssr_configure_node_devices.json.j2') }}"
+    body_format: json
+    validate_certs: no
+    status_code: 201
+    headers:
+      Authorization: "Bearer {{ web_auth.json.token }}"
+  register: config
+  loop: "{{ cssr_depts }}"
+  failed_when: 
+    - config.status != 201
+    - config.json.message is defined
+    - "'already exists' not in config.json.message"
+  changed_when: 
+    - config.status == 201
+    - config.json.message is not defined
+
+- name: configure router node wan device
+  ansible.builtin.uri:
+    url: https://{{ cssr_conductor_ip }}/api/v1/config/candidate/authority/router/{{ cssr_routername }}/node/{{ cssr_pod_name }}/device-interface
+    method: POST
+    body: "{{ lookup('template', 'cssr_configure_node_wan_device.json.j2') }}"
+    body_format: json
+    validate_certs: no
+    status_code: 201
+    headers:
+      Authorization: "Bearer {{ web_auth.json.token }}"
+  register: config
+  failed_when: 
+    - config.status != 201
+    - config.json.message is defined
+    - "'already exists' not in config.json.message"
+  changed_when: 
+    - config.status == 201
+    - config.json.message is not defined
+
+- name: validate and commit config
+  ansible.builtin.uri:
+    url: https://{{ cssr_conductor_ip }}/api/v1/config/commit
+    method: POST
+    body: "{}"
+    body_format: json
+    validate_certs: no
+    status_code: 200
+    headers:
+      Authorization: "Bearer {{ web_auth.json.token }}"
+  register: commit
+  until: commit.status == 200
+
+- name: wait for router to connect
+  ansible.builtin.uri:
+    url: https://{{ cssr_conductor_ip }}/api/v1/router/{{ cssr_routername }}
+    method: GET
+    validate_certs: no
+    headers:
+      Authorization: "Bearer {{ web_auth.json.token }}"
+  register: router_status
+  until: router_status.json.managementConnected
+  delay: 30
+  retries: 12

@@ -1,0 +1,224 @@
+{
+    "router": [
+        {
+            "name": "SSR-client2-bridge",
+            "interNodeSecurity": "external",
+            "node": [
+                {
+                    "name": "node1",
+                    "id": 1,
+                    "assetId": "cssr-auto-client2-cssr-client2",
+                    "role": "combo",
+                    "deviceInterface": [
+                        {
+                            "name": "LAN1",
+                            "id": 1,
+                            "targetInterface": "net1.3100.3210",
+                            "bridgeName": "net1_br3210",
+                            "networkInterface": [
+                                {
+                                    "name": "LAN1-int",
+                                    "globalId": 3,
+                                    "tenant": "LAN1.site32-client2",
+                                    "interRouterSecurity": "external",
+                                    "address": [
+                                        {
+                                            "ipAddress": "192.168.101.253",
+                                            "prefixLength": 24,
+                                            "gateway": "192.168.101.1",
+                                            "hostService": [
+                                                {
+                                                    "serviceType": "ssh",
+                                                    "id": 1
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "sourceNat": true,
+                                    "icmp": "allow"
+                                }
+                            ],
+                            "type": "bridged"
+                        },
+                        {
+                            "name": "LAN2",
+                            "id": 3,
+                            "targetInterface": "net1.3100.3220",
+                            "bridgeName": "net1_br3220",
+                            "networkInterface": [
+                                {
+                                    "name": "LAN2-int",
+                                    "globalId": 5,
+                                    "tenant": "LAN2.site32-client2",
+                                    "interRouterSecurity": "external",
+                                    "address": [
+                                        {
+                                            "ipAddress": "192.168.102.253",
+                                            "prefixLength": 24,
+                                            "gateway": "192.168.102.1",
+                                            "hostService": [
+                                                {
+                                                    "serviceType": "ssh",
+                                                    "id": 3
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "sourceNat": true,
+                                    "icmp": "allow"
+                                }
+                            ],
+                            "type": "bridged"
+                        },
+                        {
+                            "name": "LAN3",
+                            "id": 4,
+                            "targetInterface": "net1.3100.3230",
+                            "bridgeName": "net1_br3230",
+                            "networkInterface": [
+                                {
+                                    "name": "LAN3-int",
+                                    "globalId": 6,
+                                    "tenant": "LAN3.site32-client2",
+                                    "interRouterSecurity": "external",
+                                    "address": [
+                                        {
+                                            "ipAddress": "192.168.103.253",
+                                            "prefixLength": 24,
+                                            "gateway": "192.168.103.1",
+                                            "hostService": [
+                                                {
+                                                    "serviceType": "ssh",
+                                                    "id": 4
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "sourceNat": true,
+                                    "icmp": "allow"
+                                }
+                            ],
+                            "type": "bridged"
+                        },
+                        {
+                            "name": "WAN1",
+                            "id": 2,
+                            "targetInterface": "net2.3100.3220",
+                            "bridgeName": "net2_br",
+                            "networkInterface": [
+                                {
+                                    "name": "WAN1-int",
+                                    "globalId": 4,
+                                    "tenant": "client-2",
+                                    "interRouterSecurity": "external",
+                                    "address": [
+                                        {
+                                            "ipAddress": "192.168.111.253",
+                                            "prefixLength": 24,
+                                            "hostService": [
+                                                {
+                                                    "serviceType": "ssh",
+                                                    "id": 2
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "sourceNat": true,
+                                    "icmp": "allow"
+                                }
+                            ],
+                            "type": "bridged"
+                        }
+                    ]
+                }
+           ],
+            "serviceRoute": [
+                {
+                    "name": "SR-Client2-Site32-LAN1-server1",
+                    "serviceName": "client2-site32-LAN1-server1",
+                    "nextHop": [
+                        {
+                            "nodeName": "node1",
+                            "interface": "LAN1-int"
+                        }
+                    ]
+                },
+                {
+                    "name": "SR-client2-site32-LAN2-server1",
+                    "serviceName": "client2-site32-LAN2-server1",
+                    "nextHop": [
+                        {
+                            "nodeName": "node1",
+                            "interface": "LAN2-int"
+                        }
+                    ]
+                },
+                {
+                    "name": "SR-client2-site32-LAN2-server1",
+                    "serviceName": "client2-site32-LAN3-server1",
+                    "nextHop": [
+                        {
+                            "nodeName": "node1",
+                            "interface": "LAN3-int"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "tenant": [
+        {
+            "name": "client2",
+        },
+        {
+            "name": "site32.client2",
+        },
+        {
+            "name": "LAN1.site32-client2",
+        },
+        {
+            "name": "LAN2.site32-client2",
+        },
+        {
+            "name": "LAN3.site32-client2",
+        }
+    ],
+    "service": [
+        {
+            "name": "client2-site32-LAN1-server1",
+            "id": 5,
+            "address": [
+                "192.168.101.0/24"
+            ],
+            "accessPolicy": [
+                {
+                    "source": "site32.client2"
+                }
+            ]
+        },
+        {
+            "name": "client2-site32-LAN2-server1",
+            "id": 5,
+            "address": [
+                "192.168.102.0/24"
+            ],
+            "accessPolicy": [
+                {
+                    "source": "site32.client2"
+                }
+            ]
+        },
+        {
+           "name": "client2-site32-LAN3-server1",
+            "id": 5,
+            "address": [
+                "192.168.103.0/24"
+            ],
+            "accessPolicy": [
+                {
+                    "source": "site32.client2"
+                }
+            ]
+        }
+    ]
+}

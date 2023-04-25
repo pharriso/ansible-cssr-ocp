@@ -1,0 +1,11 @@
+#jinja2: trim_blocks:False
+{
+              "name": "SR-{{ cssr_client }}-{{ site }}-lan{{ cssr_site_id }}{{ item.dept_id }}-server1",
+              "serviceName": "{{ cssr_client }}-{{ site }}-lan{{ cssr_site_id }}{{ item.dept_id }}-server1",
+              "nextHop": [
+                  {
+                      "nodeName": "{{ cssr_pod_name }}",
+                      "interface": "lan{{ cssr_site_id }}{{ item.dept_id }}-int"
+                  }
+              ]
+}
