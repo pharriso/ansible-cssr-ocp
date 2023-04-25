@@ -94,8 +94,6 @@ spec:
         operator: Exists
       volumes:
       - name: modules
-        persistentVolumeClaim:
-          claimName: {{ cssr_name }}-modules
         hostPath:
           path: /mnt/cssr
           type: Directory
