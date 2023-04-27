@@ -7,25 +7,25 @@
     kind: Namespace
     state: present
 
-- name: create sa in namespace
-  kubernetes.core.k8s:
-    state: present
-    definition: "{{ lookup('template', 'sa.yaml.j2') | from_yaml }}"
+#- name: create sa in namespace
+#  kubernetes.core.k8s:
+#state: present
+#definition: "{{ lookup('template', 'sa.yaml.j2') | from_yaml }}"
 
-- name: assign privileged role to sa
-  kubernetes.core.k8s:
-    state: present
-    definition: "{{ lookup('template', 'sa_permissions.yaml.j2') | from_yaml }}"
+#- name: assign privileged role to sa
+#kubernetes.core.k8s:
+#state: present
+#definition: "{{ lookup('template', 'sa_permissions.yaml.j2') | from_yaml }}"
 
-- name: create role binding for sa
-  kubernetes.core.k8s:
-    state: present
-    definition: "{{ lookup('template', 'sa_role_bindings.yaml.j2') | from_yaml }}"
+#- name: create role binding for sa
+#kubernetes.core.k8s:
+#state: present
+#definition: "{{ lookup('template', 'sa_role_bindings.yaml.j2') | from_yaml }}"
 
-- name: assign permissions to pull images from default namespace
-  kubernetes.core.k8s:
-    state: present
-    definition: "{{ lookup('template', 'sa_pull_permissions.yaml.j2') | from_yaml }}"
+#- name: assign permissions to pull images from default namespace
+#kubernetes.core.k8s:
+#state: present
+#definition: "{{ lookup('template', 'sa_pull_permissions.yaml.j2') | from_yaml }}"
 
 - name: deploy network attachments to openshift namespace
   kubernetes.core.k8s:
