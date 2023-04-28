@@ -1,0 +1,16 @@
+---
+
+client8:
+  cssr_namespace: client8-cssr-auto
+  cssr_name: client8-cssr-auto
+  cssr_router_shortname: client8-cssr-auto-router
+  cssr_network_attachments:
+    - ens6f0np0
+    - ens6f1np1
+  cssr_pvc_size: 512Mi
+  cssr_client_id: 8
+  cssr_wan_id: 11
+  cssr_wan_ipaddr: 192.168.111.253
+  cssr_wan_cidr: 192.168.111.0/24
+  cssr_wan_client: 33
+  ocp_node: master-2

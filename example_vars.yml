@@ -1,6 +1,3 @@
-cssr_namespace: cssr-auto
-cssr_name: cssr-auto-node
-cssr_router_shortname: cssr-auto-router
 cssr_conductor_ip: 
 cssr_conductor_user: 
 cssr_conductor_password: ''
